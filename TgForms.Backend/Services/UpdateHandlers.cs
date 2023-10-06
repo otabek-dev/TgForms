@@ -33,6 +33,7 @@ namespace TgForms.Backend.Services
             var action = messageText switch
             {
                 "/start" => StartAction(_botClient, message, cancellationToken),
+                
                 _ => SendInlineKeyboardWithWebApp(_botClient, message, cancellationToken)
             };
 
@@ -47,7 +48,7 @@ namespace TgForms.Backend.Services
 
                 ReplyKeyboardMarkup replyKeyboardMarkup = new(new[]
                 {
-                    new KeyboardButton[] { "Create forms", "My forms" },
+                    KeyboardButton.WithWebApp("Create forms", )
                 })
                 {
                     ResizeKeyboard = true
