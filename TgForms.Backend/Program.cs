@@ -14,7 +14,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<UpdateHandlers>();
 builder.Services.AddScoped<FormService>();
 builder.Services.AddScoped<UserService>();
-
+builder.Services.AddScoped<AnswerService>();
 
 builder.Services.AddDbContext<AppDbContext>();
 

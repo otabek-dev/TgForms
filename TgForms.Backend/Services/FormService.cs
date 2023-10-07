@@ -1,7 +1,4 @@
-﻿using Microsoft.AspNetCore.Components.Forms;
-using Microsoft.AspNetCore.SignalR;
-using Microsoft.EntityFrameworkCore;
-using System.Reflection.Metadata.Ecma335;
+﻿using Microsoft.EntityFrameworkCore;
 using TgForms.Backend.DB;
 using TgForms.Backend.DTOs;
 using TgForms.Backend.Models;
@@ -21,7 +18,7 @@ namespace TgForms.Backend.Services
             _userService = userService;
         }
 
-        public async Task<Result> CreateFromAsync(FormDTO model, UserDTO user)
+        public async Task<Result> CreateFormAsync(FormDTO model, UserDTO user)
         {
             if (!await _userService.HasUserAsync(user.Id))
                 if (!await _userService.CreateUserByIdAsync(user))
@@ -48,7 +45,7 @@ namespace TgForms.Backend.Services
             await _context.Forms.AddAsync(form);
             await _context.SaveChangesAsync();
 
-            return new Result(true);
+            return new Result(true, "New form created!");
         }
 
         public async Task<Result> GetFormDetailsByIdAsync(Guid formId)
@@ -75,8 +72,31 @@ namespace TgForms.Backend.Services
                     }).ToList()
                 }).ToListAsync();
 
-            return new DataResult<List<FormDetailsViewModel>>(form, true);
+            if (form.Count == 0)
+                return new Result(false, "Form not found!");
 
+            return new DataResult<List<FormDetailsViewModel>>(form, true);
+        }
+
+        public async Task<Result> GetFormByIdToCreateAnswerAsync(Guid formId)
+        {
+            var form = await _context.Forms
+                .Where(f => f.Id == formId)
+                .Select(x => new FormToCreateAnswerViewModel()
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                    Description = x.Description,
+                    CustomProperties = x.CustomProperties.Select(cpv => new CustomPropertyViewModel()
+                    {
+                        Id = cpv.Id,
+                        Name = cpv.Name,
+                        TypeProperty = cpv.TypeProperty,
+                        CustomPropertyValues = new()
+                    }).ToList(),
+                }).ToListAsync();
+
+            return new DataResult<List<FormToCreateAnswerViewModel>>(form, true);
         }
     }
 }

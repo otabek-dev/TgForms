@@ -16,17 +16,24 @@ namespace TgForms.Backend.Controllers
             _formService = formService;
         }
 
+        [HttpGet("detailsById/{formId}")]
+        public async Task<Result> GetFormDetailsById(Guid formId)
+        {
+            var result = await _formService.GetFormDetailsByIdAsync(formId);
+            return result;
+        }
+
         [HttpGet("{formId}")]
         public async Task<Result> GetFormById(Guid formId)
         {
-            var result = await _formService.GetFormDetailsByIdAsync(formId);
+            var result = await _formService.GetFormByIdToCreateAnswerAsync(formId);
             return result;
         }
 
         [HttpPost]
         public async Task<Result> CreateForm([FromBody] CreateFormDTO createFormDTO)
         {
-            var result = await _formService.CreateFromAsync(createFormDTO.FormDTO, createFormDTO.UserDTO);
+            var result = await _formService.CreateFormAsync(createFormDTO.FormDTO, createFormDTO.UserDTO);
             return result;
         }
     }
