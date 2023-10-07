@@ -12,6 +12,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<UpdateHandlers>();
+builder.Services.AddScoped<FormService>();
+
 
 builder.Services.AddDbContext<AppDbContext>();
 

@@ -17,10 +17,9 @@ namespace TgForms.Backend.Controllers
         [HttpPost]
         public async void Post(
             [FromBody] Update update,
-            [FromServices] UpdateHandlers handleUpdateService,
-            CancellationToken cancellationToken)
+            [FromServices] UpdateHandlers handleUpdateService)
         {
-            await handleUpdateService.HandleUpdateAsync(update, cancellationToken);
+            await handleUpdateService.HandleUpdateAsync(update);
         }
     }
 }

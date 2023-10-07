@@ -10,45 +10,48 @@ namespace TgForms.Backend.Services
     {
         private TelegramBotClient _botClient = Bot.GetTelegramBot();
 
-        public async Task HandleUpdateAsync(Update update, CancellationToken cancellationToken)
+        public async Task HandleUpdateAsync(Update update)
         {
             var handler = update switch
             {
-                { Message: { } message } => BotOnMessageReceived(message, cancellationToken),
-                //{ InlineQuery: { } inlineQuery } => BotOnInlineQueryReceived(inlineQuery, cancellationToken),
-                { EditedMessage: { } message } => BotOnMessageReceived(message, cancellationToken),
-                { CallbackQuery: { } callbackQuery } => BotOnCallbackQueryReceived(callbackQuery, cancellationToken),
-                { ChosenInlineResult: { } chosenInlineResult } => BotOnChosenInlineResultReceived(chosenInlineResult, cancellationToken),
-                _ => UnknownUpdateHandlerAsync(update, cancellationToken)
+                { Message: { } message } => BotOnMessageReceived(message),
+                { InlineQuery: { } inlineQuery } => BotOnInlineQueryReceived(inlineQuery),
+                _ => UnknownUpdateHandlerAsync(update)
             };
 
             await handler;
         }
 
-        private async Task BotOnMessageReceived(Message message, CancellationToken cancellationToken)
+        private async Task BotOnMessageReceived(Message message)
         {
             if (message.Text is not { } messageText)
                 return;
 
+            if (message.ViaBot is not null)
+                return;
+
             var action = messageText switch
             {
-                "/start" => StartAction(_botClient, message, cancellationToken),
-                
-                _ => SendInlineKeyboardWithWebApp(_botClient, message, cancellationToken)
+                "/start" => StartAction(_botClient, message),
+                "How to publich?" => SendInlineKeyboardWithPublishButton(_botClient, message),
+                _ => SendInlineKeyboardWithPublishButton(_botClient, message)
             };
 
             Message sentMessage = await action;
 
-            static async Task<Message> StartAction(ITelegramBotClient botClient, Message message, CancellationToken cancellationToken)
+            static async Task<Message> StartAction(ITelegramBotClient botClient, Message message)
             {
                 await botClient.SendChatActionAsync(
                     chatId: message.Chat.Id,
                     chatAction: ChatAction.Typing,
-                    cancellationToken: cancellationToken);
+                    cancellationToken: default);
+
+                var webAppInfo = new WebAppInfo() { Url = $"{Bot.WebAppUrl}" };
 
                 ReplyKeyboardMarkup replyKeyboardMarkup = new(new[]
                 {
-                    KeyboardButton.WithWebApp("Create forms", )
+                    KeyboardButton.WithWebApp("My forms", webAppInfo),
+                    new KeyboardButton("How to publish?")
                 })
                 {
                     ResizeKeyboard = true
@@ -58,100 +61,85 @@ namespace TgForms.Backend.Services
                     chatId: message.Chat.Id,
                     text: "Welcome to TgForms bot.",
                     replyMarkup: replyKeyboardMarkup,
-                    cancellationToken: cancellationToken);
+                    cancellationToken: default);
             }
 
-            static async Task<Message> SendInlineKeyboardWithWebApp(ITelegramBotClient botClient, Message message, CancellationToken cancellationToken)
+            static async Task<Message> SendInlineKeyboardWithPublishButton(ITelegramBotClient botClient, Message message)
             {
                 await botClient.SendChatActionAsync(
                     chatId: message.Chat.Id,
                     chatAction: ChatAction.Typing,
-                    cancellationToken: cancellationToken);
+                    cancellationToken: default);
 
-                var drug = message.Text?.Replace(' ', '-');
+                InlineKeyboardMarkup inlineKeyboard = new(
+                    InlineKeyboardButton.WithSwitchInlineQuery("Publish"));
 
-                var webAppInfo = new WebAppInfo() { Url = $"{Bot.WebAppUrl}/{drug}" };
-
-                InlineKeyboardMarkup inlineKeyboard = new(InlineKeyboardButton.WithWebApp("Results", webAppInfo));
+                var text = "1) Click on the \"Publish\" button to publish your form. \r\n" +
+                    "2) Next, select chat. \r\n" +
+                    "3) Then wait until your forms appear in the popup window. \r\n" +
+                    "4) Now you can choose any of the suggested forms to share.";
 
                 return await botClient.SendTextMessageAsync(
                     chatId: message.Chat.Id,
-                    text: "Click on the button to see the results",
+                    text: text,
                     replyMarkup: inlineKeyboard,
-                    cancellationToken: cancellationToken);
+                    cancellationToken: default);
             }
         }
 
-        private async Task BotOnCallbackQueryReceived(CallbackQuery callbackQuery, CancellationToken cancellationToken)
+        private async Task BotOnInlineQueryReceived(InlineQuery inlineQuery)
         {
-            await _botClient.AnswerCallbackQueryAsync(
-                callbackQueryId: callbackQuery.Id,
-                text: $"Received {callbackQuery.Data}",
-                cancellationToken: cancellationToken);
+            try
+            {
+                //List<DrugViewModel> drugs;
+                //if (inlineQuery.Query is "")
+                //    drugs = _drugSearchService.GetAllDrugs();
+                //else
+                //    drugs = _drugSearchService.SearchDrugs(inlineQuery.Query);
 
-            await _botClient.SendTextMessageAsync(
-                chatId: callbackQuery.Message!.Chat.Id,
-                text: $"Received {callbackQuery.Data}",
-                cancellationToken: cancellationToken);
+                var results = InlineQueryResult(new() { "text1", "text2", "text3", "text4" });
+
+                await _botClient.AnswerInlineQueryAsync(
+                    inlineQueryId: inlineQuery.Id,
+                    results: results,
+                    cacheTime: 0,
+                    isPersonal: true,
+                    cancellationToken: default);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
         }
 
-        //private async Task BotOnInlineQueryReceived(InlineQuery inlineQuery, CancellationToken cancellationToken)
-        //{
-        //    try
-        //    {
-        //        List<DrugViewModel> drugs;
-        //        if (inlineQuery.Query is "")
-        //            drugs = _drugSearchService.GetAllDrugs();
-        //        else
-        //            drugs = _drugSearchService.SearchDrugs(inlineQuery.Query);
-
-        //        var results = InlineQueryResult(drugs);
-
-        //        await _botClient.AnswerInlineQueryAsync(
-        //            inlineQueryId: inlineQuery.Id,
-        //            results: results,
-        //            cacheTime: 0,
-        //            isPersonal: true,
-        //            cancellationToken: cancellationToken);
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        Console.WriteLine(e.Message);
-        //    }
-        //}
-
-        //private List<InlineQueryResult> InlineQueryResult(List<DrugViewModel> drugs)
-        //{
-        //    List<InlineQueryResult> results = new();
-        //    foreach (var drug in drugs)
-        //    {
-        //        var resultTextMarkdown = $"[{drug.Name}]({Bot.BotUrlWithStartApp}{drug.Id})\n\n{drug.Description}";
-
-        //        var article = new InlineQueryResultArticle(
-        //        id: Guid.NewGuid().ToString(),
-        //        title: drug.Name,
-        //        inputMessageContent: new InputTextMessageContent(resultTextMarkdown) { ParseMode = ParseMode.Markdown });
-
-        //        article.Description = drug.Description;
-        //        article.ThumbnailUrl = "https://loremflickr.com/300/300/medicament";
-        //        article.ThumbnailWidth = 300;
-        //        article.ThumbnailHeight = 300;
-
-        //        results.Add(article);
-        //    }
-
-        //    return results;
-        //}
-
-        private async Task BotOnChosenInlineResultReceived(ChosenInlineResult chosenInlineResult, CancellationToken cancellationToken)
+        private List<InlineQueryResult> InlineQueryResult(List<string> forms)
         {
-            await _botClient.SendTextMessageAsync(
-                chatId: chosenInlineResult.From.Id,
-                text: $"You chose result with Id: {chosenInlineResult.ResultId}",
-                cancellationToken: cancellationToken);
+            List<InlineQueryResult> results = new();
+            foreach (var form in forms)
+            {
+                var resultTextMarkdown = $"{form}";
+
+                var article = new InlineQueryResultArticle(
+                id: Guid.NewGuid().ToString(),
+                title: form,
+                inputMessageContent: new InputTextMessageContent(resultTextMarkdown) { ParseMode = ParseMode.Markdown });
+
+                article.Description = form;
+                article.ThumbnailUrl = "https://loremflickr.com/300/300/medicament";
+                article.ThumbnailWidth = 300;
+                article.ThumbnailHeight = 300;
+
+                var webAppUrlToForm = $"{Bot.BotUrlWithStartApp}";
+
+                article.ReplyMarkup = new InlineKeyboardMarkup(InlineKeyboardButton.WithUrl("Form", webAppUrlToForm));
+
+                results.Add(article);
+            }
+
+            return results;
         }
 
-        private Task UnknownUpdateHandlerAsync(Update update, CancellationToken cancellationToken)
+        private Task UnknownUpdateHandlerAsync(Update update)
         {
             return Task.CompletedTask;
         }
