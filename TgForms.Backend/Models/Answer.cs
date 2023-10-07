@@ -5,7 +5,8 @@ namespace TgForms.Backend.Models
     public class Answer
     {
         public Guid Id { get; set; }
-        public required string Name { get; set; }
+        public required string Username { get; set; }
+        public required long UserId { get; set; }
         public Guid FormId { get; set; }
 
         [JsonIgnore]

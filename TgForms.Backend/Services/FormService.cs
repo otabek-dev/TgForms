@@ -1,25 +1,30 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Components.Forms;
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
 using System.Reflection.Metadata.Ecma335;
 using TgForms.Backend.DB;
 using TgForms.Backend.DTOs;
 using TgForms.Backend.Models;
 using TgForms.Backend.Results;
+using TgForms.Backend.ViewModels;
 
 namespace TgForms.Backend.Services
 {
     public class FormService
     {
         private readonly AppDbContext _context;
+        private readonly UserService _userService;
 
-        public FormService(AppDbContext context)
+        public FormService(AppDbContext context, UserService userService)
         {
             _context = context;
+            _userService = userService;
         }
 
-        public async Task<Result> CreateCollectionAsync(FormDTO model, UserDTO user)
+        public async Task<Result> CreateFromAsync(FormDTO model, UserDTO user)
         {
-            if (!await HasUser(user.Id))
-                if (!await CreateUserById(user))
+            if (!await _userService.HasUserAsync(user.Id))
+                if (!await _userService.CreateUserByIdAsync(user))
                     return new Result(false, "Form not created / User not found");
 
             var form = new Form
@@ -46,31 +51,32 @@ namespace TgForms.Backend.Services
             return new Result(true);
         }
 
-        private async Task<bool> HasUser(long userId)
+        public async Task<Result> GetFormDetailsByIdAsync(Guid formId)
         {
-            return await _context.Users.AnyAsync(u => u.Id == userId);
-        }
-
-        private async Task<bool> CreateUserById(UserDTO tgUser)
-        {
-            try
-            {
-                var user = new User
+            var form = await _context.Forms
+                .Where(x => x.Id == formId)
+                .Include(x => x.Answers)
+                    .ThenInclude(x => x.CustomPropertyValues)
+                        .ThenInclude(x => x.CustomProperty)
+                .Select(f => new FormDetailsViewModel()
                 {
-                    Id = tgUser.Id,
-                    Name = tgUser.Name,
-                    Username = tgUser.Username,
-                    Forms = new()
-                };
-                await _context.Users.AddAsync(user);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                return false;
-            }
+                    Id = f.Id,
+                    Name = f.Name,
+                    AnswersCount = f.Answers.Count,
+                    Answers = f.Answers.Select(a => new AnswerViewModel()
+                    {
+                        UserId = f.UserId,
+                        CustomPropertyValues = a.CustomPropertyValues.Select(cpv => new CustomPropertyValueViewModel()
+                        {
+                            Value = cpv.Value,
+                            CustomPropertyName = cpv.CustomProperty.Name,
+                            CustomPropertyType = cpv.CustomProperty.TypeProperty,
+                        }).ToList(),
+                    }).ToList()
+                }).ToListAsync();
 
-            return true;
+            return new DataResult<List<FormDetailsViewModel>>(form, true);
+
         }
     }
 }

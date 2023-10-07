@@ -19,7 +19,7 @@ namespace TgForms.Backend.Controllers
         [HttpGet("GetMyForms/{userId}")]
         public async Task<Result> Get(long userId)
         {
-            var result = await _userService.GetFormsByUserId(userId);
+            var result = await _userService.GetFormsByUserIdAsync(userId);
             return result;
         }
     }
