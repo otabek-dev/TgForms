@@ -9,17 +9,16 @@ import Button from "../UI/Button/Button.jsx";
 import Input from "../UI/Input/Input.jsx";
 import Loader from "../UI/Loader/Loader.jsx";
 import {useNavigate} from "react-router-dom";
-import MessagePage from "../NotFoundPage/MessagePage.jsx";
 
 const CreateFormPage = () => {
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState("Err");
-  const {tg, user} = useTelegram()
+  const {user} = useTelegram()
   const navigate = useNavigate();
   const userDto = {
-    id: 777,
-    name: 'user.name',
-    username: 'user.username'
+    id: user.id,
+    name: user.name,
+    username: user.username
   }
   const [formData, setFormData] = useState({
     name: "",
