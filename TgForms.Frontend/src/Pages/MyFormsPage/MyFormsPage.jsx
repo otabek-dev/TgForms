@@ -5,9 +5,12 @@ import {useTelegram} from "../../Hooks/useTelegram.js";
 import Loader from "../../Components/UI/Loader/Loader.jsx";
 import cl from "./myFormsPage.module.css";
 import MyForms from "../../Components/MyForms/MyForms.jsx";
+import {useNavigate, useSearchParams} from "react-router-dom";
 
 const MyFormsPage = () => {
   const {user, webAppData} = useTelegram()
+  const navigate = useNavigate();
+  const [urlParams] = useSearchParams();
   const [myForms, setMyForms] = useState([{
     id: "",
     name: "",
@@ -18,17 +21,15 @@ const MyFormsPage = () => {
   const [fetchMyFormsByTgId, isLoading, error] = useFetching(async (userId) => {
     const response = await FormService.GetMyFormsByTgId(userId)
     console.log(response.data.data)
+    if (response.data.data === undefined) {
+      navigate('/forms not found')
+    }
     setMyForms(response.data.data)
   })
 
   useEffect(() => {
-    console.log(user)
-    console.log(webAppData)
-    //fetchMyFormsByTgId(user.id)
+    fetchMyFormsByTgId(urlParams.get('userId'))
   }, [])
-
-  console.log(user)
-  console.log(webAppData)
 
   return (
       <div className={cl.container}>
