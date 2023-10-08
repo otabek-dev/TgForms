@@ -1,14 +1,24 @@
 import './App.css'
-import {useTelegram} from "./Hooks/useTelegram.js";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom"
+import CreateFormPage from "./Components/CreateFormPage/CreateFormPage.jsx";
+import MyFormsPage from "./Components/MyFormsPage/MyFormsPage.jsx";
+import MyFormDetailPage from "./Components/MyFormDetailPage/MyFormDetailPage.jsx";
+import NotFoundPage from "./Components/NotFoundPage/NotFoundPage.jsx";
+import CreateAnswerPage from "./Components/CreateAnswerPage/CreateAnswerPage.jsx";
 
 function App() {
-  const {tg, webAppData} = useTelegram();
-  console.log(tg)
-  console.log(webAppData)
+
   return (
-    <>
-      <h1>Hello world</h1>
-    </>
+    <Router>
+      <Routes>
+        <Route path={"create-form"} element={<CreateFormPage />} />
+        <Route path={'my-forms'} element={<MyFormsPage />} />
+        <Route path={'my-forms/:formId'} element={<MyFormDetailPage />} />
+        <Route path={'create-answer/:formId'} element={<CreateAnswerPage />} />
+
+        <Route path={"*"} element={<NotFoundPage />} />
+      </Routes>
+    </Router>
   )
 }
 
