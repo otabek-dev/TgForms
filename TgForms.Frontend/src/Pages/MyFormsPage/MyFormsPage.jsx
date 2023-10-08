@@ -7,7 +7,7 @@ import cl from "./myFormsPage.module.css";
 import MyForms from "../../Components/MyForms/MyForms.jsx";
 
 const MyFormsPage = () => {
-  const {user} = useTelegram()
+  const {user, webAppData} = useTelegram()
   const [myForms, setMyForms] = useState([{
     id: "",
     name: "",
@@ -22,8 +22,13 @@ const MyFormsPage = () => {
   })
 
   useEffect(() => {
-    fetchMyFormsByTgId(user.id)
+    console.log(user)
+    console.log(webAppData)
+    //fetchMyFormsByTgId(user.id)
   }, [])
+
+  console.log(user)
+  console.log(webAppData)
 
   return (
       <div className={cl.container}>
