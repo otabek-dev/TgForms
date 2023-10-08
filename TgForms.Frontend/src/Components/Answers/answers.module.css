@@ -1,0 +1,20 @@
+.formDetails {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    border: 3px solid var(--tg-theme-button-color);
+}
+
+.answers {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    border: 3px solid var(--tg-theme-button-color);
+    margin-top: 10px;
+}
+
+.answer_values {
+    margin-top: 10px;
+    padding-left: 5px;
+    border-left: 3px solid var(--tg-theme-button-color);
+}

@@ -46,7 +46,7 @@ namespace TgForms.Backend.Services
                     chatAction: ChatAction.Typing,
                     cancellationToken: default);
 
-                var webAppInfo = new WebAppInfo() { Url = $"{Bot.WebAppUrl}" };
+                var webAppInfo = new WebAppInfo() { Url = $"{Bot.WebAppUrl}/my-forms" };
 
                 ReplyKeyboardMarkup replyKeyboardMarkup = new(new[]
                 {

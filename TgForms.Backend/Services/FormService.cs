@@ -70,12 +70,12 @@ namespace TgForms.Backend.Services
                             CustomPropertyType = cpv.CustomProperty.TypeProperty,
                         }).ToList(),
                     }).ToList()
-                }).ToListAsync();
+                }).FirstOrDefaultAsync();
 
-            if (form.Count == 0)
+            if (form is null)
                 return new Result(false, "Form not found!");
 
-            return new DataResult<List<FormDetailsViewModel>>(form, true);
+            return new DataResult<FormDetailsViewModel>(form, true);
         }
 
         public async Task<Result> GetFormByIdToCreateAnswerAsync(Guid formId)

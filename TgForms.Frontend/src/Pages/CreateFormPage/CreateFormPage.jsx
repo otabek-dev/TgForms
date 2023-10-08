@@ -3,11 +3,11 @@ import cl from './createFromPage.module.css'
 import {useTelegram} from "../../Hooks/useTelegram.js";
 import {useFetching} from "../../Hooks/useFetching.js";
 import FormService from "../../API/Form.service.js";
-import ErrorModal from "../UI/ErrorModal/ErrorModal.jsx";
-import CreateCustomFields from "../CreateCustomFields/CreateCustomFields.jsx";
-import Button from "../UI/Button/Button.jsx";
-import Input from "../UI/Input/Input.jsx";
-import Loader from "../UI/Loader/Loader.jsx";
+import ErrorModal from "../../Components/UI/ErrorModal/ErrorModal.jsx";
+import CreateCustomFields from "../../Components/CreateCustomFields/CreateCustomFields.jsx";
+import Button from "../../Components/UI/Button/Button.jsx";
+import Input from "../../Components/UI/Input/Input.jsx";
+import Loader from "../../Components/UI/Loader/Loader.jsx";
 import {useNavigate} from "react-router-dom";
 
 const CreateFormPage = () => {

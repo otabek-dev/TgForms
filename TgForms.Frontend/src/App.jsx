@@ -1,10 +1,10 @@
 import './App.css'
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom"
-import CreateFormPage from "./Components/CreateFormPage/CreateFormPage.jsx";
-import MyFormsPage from "./Components/MyFormsPage/MyFormsPage.jsx";
-import MyFormDetailPage from "./Components/MyFormDetailPage/MyFormDetailPage.jsx";
-import MessagePage from "./Components/NotFoundPage/MessagePage.jsx";
-import CreateAnswerPage from "./Components/CreateAnswerPage/CreateAnswerPage.jsx";
+import CreateFormPage from "./Pages/CreateFormPage/CreateFormPage.jsx";
+import MyFormsPage from "./Pages/MyFormsPage/MyFormsPage.jsx";
+import MyFormDetailPage from "./Pages/MyFormDetailPage/MyFormDetailPage.jsx";
+import MessagePage from "./Pages/NotFoundPage/MessagePage.jsx";
+import CreateAnswerPage from "./Pages/CreateAnswerPage/CreateAnswerPage.jsx";
 
 function App() {
 
