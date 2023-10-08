@@ -4,11 +4,18 @@ import {useTelegram} from "../../Hooks/useTelegram.js";
 import {useFetching} from "../../Hooks/useFetching.js";
 import FormService from "../../API/Form.service.js";
 import ErrorModal from "../UI/ErrorModal/ErrorModal.jsx";
+import CreateCustomFields from "../CreateCustomFields/CreateCustomFields.jsx";
+import Button from "../UI/Button/Button.jsx";
+import Input from "../UI/Input/Input.jsx";
+import Loader from "../UI/Loader/Loader.jsx";
+import {useNavigate} from "react-router-dom";
+import MessagePage from "../NotFoundPage/MessagePage.jsx";
 
 const CreateFormPage = () => {
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState("Err");
   const {tg, user} = useTelegram()
+  const navigate = useNavigate();
   const userDto = {
     id: 777,
     name: 'user.name',
@@ -22,20 +29,21 @@ const CreateFormPage = () => {
   const [customFields, setCustomFields] = useState([]);
   const [fetchCreateFrom, isLoading, error] = useFetching(async (createFormDto) => {
     const response = await FormService.CreateForm(createFormDto)
-    console.log(response)
+    const msg = response.data.message
+    navigate(`/${msg}`)
   })
 
   const handleCreate = async () => {
     if (formData.name.trim() === "") {
       setShowErrorModal(true);
       setErrorMessage("Title field is required.");
-      return; // Прекратить выполнение функции
+      return;
     }
 
     if (formData.description.trim() === "") {
       setShowErrorModal(true);
       setErrorMessage("Description field is required.");
-      return; // Прекратить выполнение функции
+      return;
     }
 
     if (customFields.length === 0) {
@@ -48,7 +56,7 @@ const CreateFormPage = () => {
       if (field.name.trim() === "") {
         setShowErrorModal(true);
         setErrorMessage("Custom field title is required.");
-        return; // Прекратить выполнение функции
+        return;
       }
     }
 
@@ -60,7 +68,7 @@ const CreateFormPage = () => {
       userDTO
     }
     console.log(createFormDto)
-    fetchCreateFrom(createFormDto)
+    await fetchCreateFrom(createFormDto)
   };
 
   const handleAddCustomField = () => {
@@ -99,54 +107,36 @@ const CreateFormPage = () => {
         {showErrorModal && (
             <ErrorModal errorMessage={errorMessage} onClose={handleCloseErrorModal} />
         )}
-        <h1 style={{fontSize: '24px'}}>Create form</h1>
-        <input
-            className={cl.input}
-            type='text'
-            placeholder={'Title'}
-            name="name"
-            maxLength={20}
-            value={formData.name}
-            onChange={handleChange}
-        />
-        <textarea
-            className={cl.text_area}
-            placeholder={'Description'}
-            maxLength={120}
-            name="description"
-            value={formData.description}
-            onChange={handleChange}
-        />
+        {isLoading
+          ? <Loader />
+          : <>
+              <h1 style={{fontSize: '24px'}}>Create form</h1>
+              <Input
+                  style={{width: '100%'}}
+                  type='text'
+                  placeholder={'Title'}
+                  name="name"
+                  maxLength={20}
+                  value={formData.name}
+                  onChange={handleChange}
+              />
+              <textarea
+                  className={cl.text_area}
+                  placeholder={'Description'}
+                  maxLength={120}
+                  name="description"
+                  value={formData.description}
+                  onChange={handleChange}
+              />
 
-        {customFields.map((field, index) => (
-            <div key={index} className={cl.custom_field}>
-                <input
-                    className={cl.custom_input}
-                    placeholder={'Custom title'}
-                    type="text"
-                    value={field.name}
-                    maxLength={10}
-                    onChange={(e)=> handleChangeCustomField(index, "name", e.target.value)}
-                />
+              <CreateCustomFields customFields={customFields}
+                                  handleAddCustomField={handleAddCustomField}
+                                  handleChangeCustomField={handleChangeCustomField}
+                                  handleDeleteCustomField={handleDeleteCustomField}/>
 
-                <select
-                    className={cl.select}
-                    value={field.typeProperty}
-                    onChange={(e)=> handleChangeCustomField(index, "typeProperty", e.target.value)}
-                >
-                  <option value="string">string</option>
-                  <option value="number">number</option>
-                  <option value="bool">bool</option>
-                </select>
-              <button className={cl.delete_button} onClick={() => handleDeleteCustomField(index)}><i className="material-icons">delete</i></button>
-            </div>
-        ))}
-
-        <button className={cl.button + ' ' + cl.create_button}
-                onClick={handleAddCustomField}>
-          Add field
-        </button>
-        <button className={cl.button} onClick={handleCreate}>Create</button>
+              <Button style={{width: '100%'}} onClick={handleCreate}>Create</Button>
+            </>
+        }
       </div>
   );
 };
