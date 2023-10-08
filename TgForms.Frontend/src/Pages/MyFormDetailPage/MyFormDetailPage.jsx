@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {useParams} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 import {useFetching} from "../../Hooks/useFetching.js";
 import FormService from "../../API/Form.service.js";
 import cl from './myFormDetailPage.module.css'
@@ -9,6 +9,7 @@ import Answers from "../../Components/Answers/Answers.jsx";
 
 const MyFormDetailPage = () => {
   const {formId} = useParams()
+  const navigate = useNavigate()
   const {tg} = useTelegram();
   const [formDetails, setFormDetails] = useState({
     id: "",
