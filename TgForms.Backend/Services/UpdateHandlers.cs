@@ -3,15 +3,24 @@ using Telegram.Bot.Types.InlineQueryResults;
 using Telegram.Bot.Types.ReplyMarkups;
 using Telegram.Bot.Types;
 using Telegram.Bot;
+using TgForms.Backend.ViewModels;
+using TgForms.Backend.Results;
 
 namespace TgForms.Backend.Services
 {
     public class UpdateHandlers
     {
         private TelegramBotClient _botClient = Bot.GetTelegramBot();
+        private UserService _userService;
+
+        public UpdateHandlers(UserService userService)
+        {
+            _userService = userService;
+        }
 
         public async Task HandleUpdateAsync(Update update)
         {
+            
             var handler = update switch
             {
                 { Message: { } message } => BotOnMessageReceived(message),
@@ -91,13 +100,9 @@ namespace TgForms.Backend.Services
         {
             try
             {
-                //List<DrugViewModel> drugs;
-                //if (inlineQuery.Query is "")
-                //    drugs = _drugSearchService.GetAllDrugs();
-                //else
-                //    drugs = _drugSearchService.SearchDrugs(inlineQuery.Query);
-
-                var results = InlineQueryResult(new() { "text1", "text2", "text3", "text4" });
+                var forms = _userService.GetFormsByUserId(inlineQuery.From.Id);
+                
+                var results = InlineQueryResult(forms);
 
                 await _botClient.AnswerInlineQueryAsync(
                     inlineQueryId: inlineQuery.Id,
@@ -112,22 +117,19 @@ namespace TgForms.Backend.Services
             }
         }
 
-        private List<InlineQueryResult> InlineQueryResult(List<string> forms)
+        private List<InlineQueryResult> InlineQueryResult(List<FormViewModel> forms)
         {
             List<InlineQueryResult> results = new();
             foreach (var form in forms)
             {
-                var resultTextMarkdown = $"{form}";
+                var resultTextMarkdown = $"{form.Name}\n\n{form.Description}";
 
                 var article = new InlineQueryResultArticle(
                 id: Guid.NewGuid().ToString(),
-                title: form,
+                title: form.Name,
                 inputMessageContent: new InputTextMessageContent(resultTextMarkdown) { ParseMode = ParseMode.Markdown });
 
-                article.Description = form;
-                article.ThumbnailUrl = "https://loremflickr.com/300/300/medicament";
-                article.ThumbnailWidth = 300;
-                article.ThumbnailHeight = 300;
+                article.Description = form.Description;
 
                 var webAppUrlToForm = $"{Bot.BotUrlWithStartApp}";
 

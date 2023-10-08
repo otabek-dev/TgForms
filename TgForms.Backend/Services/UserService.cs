@@ -36,6 +36,23 @@ namespace TgForms.Backend.Services
             return new DataResult<List<FormViewModel>>(form, true);
         }
 
+        public List<FormViewModel> GetFormsByUserId(long userId)
+        {
+            var form = _context.Forms
+                .Where(x => x.UserId == userId)
+                .Include(x => x.Answers)
+                .Select(c => new FormViewModel
+                {
+                    Id = c.Id,
+                    Name = c.Name,
+                    Description = c.Description,
+                    AnswersCount = c.Answers.Count,
+                })
+                .ToList();
+
+            return form;
+        }
+
         public async Task<bool> HasUserAsync(long userId)
         {
             return await _context.Users.AnyAsync(u => u.Id == userId);
