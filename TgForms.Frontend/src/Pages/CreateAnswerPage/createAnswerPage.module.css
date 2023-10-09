@@ -1,0 +1,15 @@
+.container {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px 20px;
+    align-content: flex-start;
+}
+
+.properties_container {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    border: 3px solid var(--tg-theme-button-color);
+}

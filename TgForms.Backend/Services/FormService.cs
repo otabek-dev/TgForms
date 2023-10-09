@@ -78,7 +78,7 @@ namespace TgForms.Backend.Services
             return new DataResult<FormDetailsViewModel>(form, true);
         }
 
-        public async Task<Result> GetFormByIdToCreateAnswerAsync(Guid formId)
+        public async Task<DataResult<FormToCreateAnswerViewModel>> GetFormByIdToCreateAnswerAsync(Guid formId)
         {
             var form = await _context.Forms
                 .Where(f => f.Id == formId)
@@ -94,9 +94,11 @@ namespace TgForms.Backend.Services
                         TypeProperty = cpv.TypeProperty,
                         CustomPropertyValues = new()
                     }).ToList(),
-                }).ToListAsync();
+                }).FirstOrDefaultAsync();
 
-            return new DataResult<List<FormToCreateAnswerViewModel>>(form, true);
+            if (form is null) return new DataResult<FormToCreateAnswerViewModel>(null, false, "Form not found!"); ;
+
+            return new DataResult<FormToCreateAnswerViewModel>(form, true);
         }
     }
 }

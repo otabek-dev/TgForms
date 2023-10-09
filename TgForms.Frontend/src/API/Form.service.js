@@ -13,6 +13,15 @@ export default class FormService {
     return response;
   }
 
+  static async CreateAnswer(answerDto) {
+    const response = await axios.post(
+        this.url + `/api/Answers`, answerDto, {
+          headers: {
+            "ngrok-skip-browser-warning": "6024"
+          }});
+    return response;
+  }
+
   static async GetMyFormsByTgId(userId) {
     const response = await axios.get(
         this.url + '/api/Users/GetMyForms/' + `${userId}`, {
@@ -30,4 +39,15 @@ export default class FormService {
           }});
     return response;
   }
+
+  static async GetFormByIdWithCustomProperties(formId) {
+    const response = await axios.get(
+        this.url + '/api/Forms/' + `${formId}`, {
+          headers: {
+            "ngrok-skip-browser-warning": "6024"
+          }});
+    return response;
+  }
+
+
 }
