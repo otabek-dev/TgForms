@@ -103,7 +103,11 @@ namespace TgForms.Backend.Services
                 
                 var results = InlineQueryResult(forms);
 
+                var queryButton = new InlineQueryResultsButton("My forms");
+                queryButton.WebApp = new WebAppInfo() { Url = $"{Bot.WebAppUrl}/my-forms?userId={inlineQuery.From.Id}" };
+
                 await _botClient.AnswerInlineQueryAsync(
+                    button: queryButton,
                     inlineQueryId: inlineQuery.Id,
                     results: results,
                     cacheTime: 0,
@@ -119,6 +123,7 @@ namespace TgForms.Backend.Services
         private List<InlineQueryResult> InlineQueryResult(List<FormViewModel> forms)
         {
             List<InlineQueryResult> results = new();
+
             foreach (var form in forms)
             {
                 var resultTextMarkdown = $"{form.Name}\n\n{form.Description}";

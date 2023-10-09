@@ -45,7 +45,7 @@ const CreateAnswerPage = () => {
     setFormWithCustomProperties(response.data.data)
   })
 
-  const [fetchCreateAnswer] = useFetching(async (answerDTO) => {
+  const [fetchCreateAnswer, isLoading2] = useFetching(async (answerDTO) => {
     const response = await FormService.CreateAnswer(answerDTO)
     navigate(`/${response.data.message}`)
   })
@@ -77,6 +77,7 @@ const CreateAnswerPage = () => {
         return;
       }
     }
+
     fetchCreateAnswer(answerDTO)
     console.log(answerDTO)
   }
@@ -96,7 +97,7 @@ const CreateAnswerPage = () => {
 
   return (
       <div  className={cl.container}>
-        {isLoading
+        {isLoading || isLoading2
           ? <Loader/>
           : <>
               <h1>Create answer</h1>
