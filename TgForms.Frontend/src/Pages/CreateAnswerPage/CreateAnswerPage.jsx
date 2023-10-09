@@ -4,7 +4,8 @@ import {useParams} from "react-router-dom";
 
 const CreateAnswerPage = () => {
   const {formId} = useParams()
-
+  const {user} = useTelegram()
+  console.log(user)
 
   return (
       <div>
