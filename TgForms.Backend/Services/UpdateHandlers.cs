@@ -20,7 +20,6 @@ namespace TgForms.Backend.Services
 
         public async Task HandleUpdateAsync(Update update)
         {
-            
             var handler = update switch
             {
                 { Message: { } message } => BotOnMessageReceived(message),
@@ -131,7 +130,7 @@ namespace TgForms.Backend.Services
 
                 article.Description = form.Description;
 
-                var webAppUrlToForm = $"{Bot.BotUrlWithStartApp}123";
+                var webAppUrlToForm = $"{Bot.BotUrlWithStartApp}{form.Id}";
 
                 article.ReplyMarkup = new InlineKeyboardMarkup(InlineKeyboardButton.WithUrl("Form", webAppUrlToForm));
 
