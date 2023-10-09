@@ -79,7 +79,7 @@ const CreateAnswerPage = () => {
       }
     }
 
-    //fetchCreateAnswer(answerDTO)
+    fetchCreateAnswer(answerDTO)
     console.log(answerDTO)
   }
 

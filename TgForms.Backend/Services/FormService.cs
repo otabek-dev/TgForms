@@ -62,7 +62,7 @@ namespace TgForms.Backend.Services
                     AnswersCount = f.Answers.Count,
                     Answers = f.Answers.Select(a => new AnswerViewModel()
                     {
-                        UserId = f.UserId,
+                        UserId = a.Username,
                         CustomPropertyValues = a.CustomPropertyValues.Select(cpv => new CustomPropertyValueViewModel()
                         {
                             Value = cpv.Value,
