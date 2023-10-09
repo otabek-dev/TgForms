@@ -52,6 +52,7 @@ const CreateAnswerPage = () => {
 
   useEffect(() => {
     fetchFormByIdWithCustomProperties(formId)
+    console.log(user)
     console.log(formWithCustomProperties)
   }, [])
 
