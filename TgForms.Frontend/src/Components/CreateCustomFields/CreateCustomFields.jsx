@@ -17,7 +17,7 @@ const CreateCustomFields = ({
                   placeholder={'Custom title'}
                   type="text"
                   value={field.name}
-                  maxLength={10}
+                  maxLength={20}
                   onChange={(e) => handleChangeCustomField(index, "name", e.target.value)}
               />
 
