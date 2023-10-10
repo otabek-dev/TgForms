@@ -1,4 +1,5 @@
 # TgForms
+[Ru doc](https://otabek-dev.notion.site/TgForms-doc-65ad5c07cfff400799fb5d743af2ea40)
 ## About the Bot
 This bot is designed for creating surveys within Telegram. It can be considered as an equivalent to Google Forms but integrated within Telegram. Users can respond to surveys without leaving the Telegram platform. The problem is that often bloggers and individuals working with audiences need information from users, and the built-in Telegram poll feature may not always suit their needs. My bot is intended to address this issue with a user-friendly interface and a convenient format, thanks to Telegram Bot Web Apps.
 
